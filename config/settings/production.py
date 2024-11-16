@@ -1,7 +1,7 @@
 from .base import *  # noqa
+from .base import BASE_DIR
 
 DEBUG = False
-
 
 # Security configuration
 
@@ -22,6 +22,10 @@ SECURE_SSL_REDIRECT = True
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "no-referrer-when-downgrade"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static_compiled",
+]
 
 # Configuration of Django-vite
 DJANGO_VITE = {

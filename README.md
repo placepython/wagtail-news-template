@@ -1,119 +1,83 @@
-# Wagtail Starter Kit - Django Project Template
+# Wagtail Starter Kit - Template de démarrage pour projet Django avec Wagtail
 
-This Django project template is designed for creating Wagtail builds quickly, intended for developers to bootstrap their Wagtail site development using `wagtail start --template=`. The template comes with pre-defined pages, blocks, functionalities, and fixtures to streamline the initial setup process.
+Ce modèle de projet Django est conçu pour créer rapidement des projets Wagtail, destiné aux développeurs souhaitant amorcer le développement de leur site Wagtail à l’aide de la commande `wagtail start --template=`. Le modèle inclut des pages, des blocs, des fonctionnalités et des fixtures prédéfinis pour simplifier le processus de configuration initiale.
 
-## Getting Started
+## Guide de démarrage
 
-1. **Check that you have an appropriate version of Python 3**  You want to make sure that you have a [compatible version](https://docs.wagtail.org/en/stable/releases/upgrading.html#compatible-django-python-versions) installed:
+1. **Vérifiez que vous avez une version de Python compatible**  Commencez par vérifier que vous avez [version de python compatible](https://docs.wagtail.org/en/stable/releases/upgrading.html#compatible-django-python-versions) installée sur votre ordinateur:
 
     ```sh
-    python --version
-    # Or:
-    python3 --version
-    # **On Windows** (cmd.exe, with the Python Launcher for Windows):
-    py --version
+    $ python --version
+    # Ou:
+    $ python3 --version
+    # **Sur Windows** (powershell, avec le launcher Python sous Windows):
+    $ py --version
     ```
 
-2. **Create a Virtual Environment**: Set up a virtual environment to isolate your project dependencies. These instructions are for GNU/Linux or MacOS, but there are [other operating systems in the Wagtail docs](https://docs.wagtail.org/en/stable/getting_started/tutorial.html#create-and-activate-a-virtual-environment).
+Vous aurez également besoin d'installer Node.js sur votre système d'exploitation. Le site officiel vous propose des instructions d'installation et des installeurs pour [différents systèmes d'exploitation](https://nodejs.org/en/download/package-manager). Une fois Node installé, redémarrez votre ordinateur.
+
+La commande suivante permet de vérifier si l'installation précédante s'est bien déroulée :
+
+    ```sh
+    $ npm --version
+    ```
+
+2. **Créez un répertoire de projet et un environnement virtuel**: Configurez le dossier du projet et un environnement virtuel pour isoler les dépendances de votre projet. Vous trouverez des [instuctions pour différents systèmes d'exploitation dans la documentation de Wagtail](https://docs.wagtail.org/en/stable/getting_started/tutorial.html#create-and-activate-a-virtual-environment).
 
     ```bash
-    python -m venv myproject/env
-    source myproject/env/bin/activate
+    $ mkdir monproject
+    $ cd monproject
+    $ python -m venv .venv
+    # **On MacOS/Linux**
+    $ source .venv/bin/activate
+    # **On Windows** (powershell)
+    $ .venv/Scripts/activate
     ```
 
-4. **Navigate to Project Directory**: Move into the newly created project directory.
+
+4. **Installez Wagtail**: Installez Wagtail CMS à l'aide de pip depuis votre répertoire de projet avec votre environnement virtuel activé.
+
+Toutes les commandes à partir de ce point doivent être exécutées avec votre environnement virtuel
+activé.
 
     ```bash
-    cd myproject
+    $ pip install wagtail
     ```
 
-5. **Install Wagtail**: Install the Wagtail CMS package using pip.
+5. **Initialisez le projet**: Utilisez la commande `wagtail start` pour créer un nouveau projet en utilisant ce kit de démarrage.
 
     ```bash
-    pip install wagtail
+    $ wagtail start --template=https://placepython.com/templates/wagtail-blog.zip monprojet .
     ```
 
-6. **Initialize Project**: Use the `wagtail start` command to create a new project based on the Wagtail Starter Kit template.
+6. **Installez les dépendances de projet**: Installez les dépendances du projet de démarrage dans votre environnement virtuel à l'aide de pip.
 
     ```bash
-    wagtail start --template=https://github.com/torchbox/wagtail-news-template/archive/refs/heads/main.zip myproject .
+    $ pip install -r requirements.txt
     ```
 
-7. **Install Project Dependencies**: Install the project's dependencies into a virtual environment.
+7. **Charger les données initiales**: Chargez les données initiales pour habiller le site de démarrage avec un peu de contenu.
 
     ```bash
-    pip install -r requirements.txt
+    $ invoke load-data
     ```
 
-All commands from now on should be run from inside the virtual environment.
-
-8. **Load Dummy Data**: Load in some dummy data to populate the site with some content.
+8. **Démarrer le serveur**: Lancez le serveur de développement de Django.
 
     ```bash
-    make load-data
+    $ invoke start
     ```
 
-9. **Start the Server**: Start the Django development server.
+9. **Dépendances front-end**: Installer les dépendances front-end avec npm et lancer le serveur de dev front-end
+
+Ouvrez un nouveau terminal à la racine de projet et exécutez les commandes suivantes (Node.js doit être installé
+sur votre ordinateur.)
 
     ```bash
-    make start
+    $ invoke start-front
     ```
 
-10. **Access the Site and Admin**: Once the server is running, you can view the site at `localhost:8000` and access the Wagtail admin interface at `localhost:8000/admin`. Log in with the default credentials provided by :
+11. **Accédez au site et à son admin**: Une fois le serveur lancé, vous pouvez visualiser le site à l’adresse [localhost:8000](http://localhost:8000) et accéder à l’interface d’administration de Wagtail à l’adresse [localhost:8000/admin](http://localhost:8000/admin). Connectez-vous avec les identifiants par défaut fournis par :
 
     - Username: admin
     - Password: password
-
-### Deploying
-
-Once you have your own copy of the template, you can extend and configure it however you like.
-
-To get it deployed, follow the instructions below for your hosting provider of choice.
-
-Don't see your preference here? Contributions are always welcome!
-
-#### fly.io
-
-Before you can deploy to [fly.io](https://fly.io/), you will need an account and the `fly` CLI tool will need to be [installed on your machine](https://fly.io/docs/flyctl/install/).
-
-1. In the root directory of your project (the one with a `fly.toml` file), run `fly launch`
-   1. When prompted about copying the existing `fly.toml` file to a new app, choose "Yes".
-
-> [!CAUTION]
-> Choosing "No" (the default) here will result in a broken deployment, as the `fly.toml` file requires configuration needed for the project to run correctly.
-
-   2. When prompted about continuing the setup in the web UI, or tweak the generated settings, choose "No".
-      1. The "Region" will be selected automatically. If you wish to change this, choose "Yes" instead, and modify the region in the browser.
-2. Once the launch is successful, you'll need to [generate a secret key](https://realorangeone.github.io/django-secret-key-generator/)
-   1. This can be done using `fly secrets set SECRET_KEY=<key>`, or through the web UI.
-3. Finally (optional), load in the dummy data, to help get you started
-   1. `fly ssh console -u wagtail -C "./manage.py load_initial_data"`
-
-> [!NOTE]
-> If you receive "error connecting to SSH server" when running the above command, It likely means the `fly.toml` above wasn't picked up correctly. Unfortunately, you'll need to delete your application and start again, resetting the changes to the `fly.toml` file.
-> If the error still persists, check the application logs.
-
-You can now visit your wagtail site at the URL provided by `fly`. We strongly recommend setting strong password for your user.
-
-The database and user-uploaded media are stored in the attached volume. To save costs and improve efficiency, the app will automatically stop when not in use, but will automatically restart when the browser loads.
-
-## Contributing
-
-To customize this template, you can either make changes directly or backport changes from a generated project (via the `wagtail start` command) by following these steps:
-
-1. Create a new project using the provided instructions in the [Getting Started](#getting-started) section.
-2. Make changes within the new project.
-3. Once you've completed your changes, you'll need to copy them over to the original project template, making sure to:
-
-    3.1. Replace occurrences of `myproject` with `{{ project_name }}`
-
-    3.2. Rename the project directory from `myproject` to `project_name` (without double curly brackets this time).
-
-    3.3. Wrap template code (`.html` files under the templates directory), with a [verbatim tag](https://docs.djangoproject.com/en/5.0/ref/templates/builtins/#std-templatetag-verbatim) or similar [templatetag](https://docs.djangoproject.com/en/5.0/ref/templates/builtins/#templatetag) to prevent template tags being rendered on `wagtail start` ([see django's rendering warning](https://docs.djangoproject.com/en/5.0/ref/django-admin/#render-warning)).
-5. Update compiled static assets using `npm run build:prod`.
-6. Update fixtures using `make dump-data`
-
-Make sure to test any changes by reviewing them against a newly created project, by following the [Getting Started](#getting-started) instructions again.
-
-
-Happy coding with Wagtail! If you encounter any issues or have suggestions for improvement, feel free to contribute or open an issue.

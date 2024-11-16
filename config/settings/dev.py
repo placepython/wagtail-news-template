@@ -1,7 +1,12 @@
-from .base import *
+from .base import *  # noqa F403
+from .base import BASE_DIR
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+STATICFILES_DIRS = [
+    BASE_DIR / "public",
+]
 
 # Configuration of Django-vite
 DJANGO_VITE = {

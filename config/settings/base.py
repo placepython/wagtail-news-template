@@ -12,18 +12,18 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-import dj_database_url
 
-PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_DIR = os.path.dirname(PROJECT_DIR)
+from config import env, BASE_DIR
 
-if "SECRET_KEY" in os.environ:
-    SECRET_KEY = os.environ["SECRET_KEY"]
+PROJECT_DIR = BASE_DIR / "{{ project_name }}"
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
+if "DJANGO_SECRET_KEY" in os.environ:
+    SECRET_KEY = env("DJANGO_SECRET_KEY")
+
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 
 if "CSRF_TRUSTED_ORIGINS" in os.environ:
-    CSRF_TRUSTED_ORIGINS = os.environ["CSRF_TRUSTED_ORIGINS"].split(",")
+    CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_extensions",
     "django_vite",
 ]
 
@@ -76,13 +77,13 @@ MIDDLEWARE = [
 ]
 
 
-ROOT_URLCONF = "{{ project_name }}.urls"
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(BASE_DIR, "templates"),
+            BASE_DIR / "templates",
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -97,19 +98,35 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "{{ project_name }}.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default="sqlite:///" + os.path.join(BASE_DIR, "db.sqlite3"),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+    "default": {
+        **env.db("DJANGO_DATABASE_URL", default="sqlite:///db.sqlite3"),
+        "conn_max_age": 600,
+        "conn_health_checks": True,
+    }
 }
+
+if "mysql" in os.environ.get("DJANGO_DATABASE_URL", ""):
+    try:
+        import pymysql
+
+        pymysql.install_as_MySQLdb()
+    except ImportError:
+        pass
+
+    DATABASES["default"]["OPTIONS"] = {
+        "charset": "utf8mb4",
+        "init_command": (
+            "SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci', "
+            "sql_mode='STRICT_TRANS_TABLES'"
+        ),
+    }
 
 
 # Password validation
@@ -152,14 +169,16 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static_compiled"),
-]
+STATIC_ROOT = BASE_DIR / "static"
+if "DJANGO_STATIC_ROOT" in os.environ:
+    STATIC_ROOT = env("DJANGO_STATIC_ROOT")
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
 
-MEDIA_ROOT = os.environ.get("MEDIA_ROOT", os.path.join(BASE_DIR, "media"))
+MEDIA_ROOT = BASE_DIR / "media"
+if "DJANGO_MEDIA_ROOT" in os.environ:
+    MEDIA_ROOT = env("DJANGO_MEDIA_ROOT")
+
 MEDIA_URL = "/media/"
 
 # Default storage settings, with the staticfiles storage updated.

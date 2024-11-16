@@ -1,4 +1,4 @@
-# Django management command to load initial data via fixtures, 
+# Django management command to load initial data via fixtures,
 # code taken from the WagtailBakerydemo:
 # https://github.com/wagtail/bakerydemo/blob/main/bakerydemo/base/management/commands/load_initial_data.py
 
@@ -38,12 +38,21 @@ class Command(BaseCommand):
         # them in the data load. Remove the auto-generated ones.
         if Site.objects.filter(hostname="localhost").exists():
             Site.objects.get(hostname="localhost").delete()
-        if Page.objects.filter(title="Welcome to your new Wagtail site!").exists():
-            Page.objects.get(title="Welcome to your new Wagtail site!").delete()
+        if Page.objects.filter(
+            title="Welcome to your new Wagtail site!"
+        ).exists():
+            Page.objects.get(
+                title="Welcome to your new Wagtail site!"
+            ).delete()
 
         call_command("loaddata", fixture_file, verbosity=0)
         call_command("update_index", verbosity=0)
         call_command("rebuild_references_index", verbosity=0)
+
+        if Site.objects.filter(hostname="localhost").exists():
+            site = Site.objects.filter(hostname="localhost").first()
+            site.site_name = "{{ project_name }}"
+            site.save()
 
         print(  # noqa: T201
             "Awesome. Your data is loaded! The bakery's doors are almost ready to open..."
